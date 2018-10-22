@@ -25,16 +25,16 @@ extension UIViewController {
         let form = FormView()
         let stylingSection = form.appendSection(header: "Styling")
 
-        let segmented = UISegmentedControl(titles: styles.map { $0.title }, index: styleIndex)
+        let segmented = UISegmentedControl(titles: styles.map { $0.title }, index: styleIndex, style: .underlined)
         activate(segmented.heightAnchor == 28) // Intrinsict content size for small resizeable images will set the height to small
         bag += stylingSection.appendRow(title: "Segmented").append(segmented).onValue {
-            styleIndex = $0
-
-            // Update current style defaults and reload UI.
-            styles[styleIndex].install()
-            self.navigationController?.navigationBar.tintColor = UINavigationBar.appearance().tintColor
-            bag.dispose()
-            bag += self.presentContents()
+//            styleIndex = $0
+//
+//            // Update current style defaults and reload UI.
+//            styles[styleIndex].install()
+//            self.navigationController?.navigationBar.tintColor = UINavigationBar.appearance().tintColor
+//            bag.dispose()
+//            bag += self.presentContents()
         }
 
         let label = UILabel(value: "Hello")
@@ -115,6 +115,23 @@ extension UIViewController {
         bag += self.install(form)
 
         return bag
+    }
+}
+
+extension SegmentedControlStyle {
+    static let underlined = SegmentedControlStyle(
+        normal: .init(color: .white, text: TextStyle.default.colored(.textGray), border: .bottom, borderWidth: 0.5, borderColor: .separator),
+        highlighted: .init(color: .white, text: TextStyle.default, border: .bottom, borderWidth: 0.5, borderColor: .separator),
+        disabled: .init(color: .white, text: TextStyle.default.colored(.textGray), borderColor: .white),
+        selected: .init(color: .white, text: TextStyle.default, border: .bottom, borderWidth: 3, borderColor: .red),
+        tintColor: .clear
+    )
+}
+
+private extension ButtonStateStyle {
+    init(color: UIColor, text: TextStyle, border: UIRectEdge = .all, borderWidth: CGFloat = 0, borderColor: UIColor = .lineGray, cornerRadius: CGFloat = 0) {
+        let borderStyle = BorderStyle(width: borderWidth, color: borderColor, cornerRadius: cornerRadius, borderEdges: border)
+        self.init(color: color, border: borderStyle, text: text)
     }
 }
 
