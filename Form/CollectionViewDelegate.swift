@@ -86,7 +86,7 @@ public extension CollectionViewDelegate {
     }
     
     var willDisplayCell: Signal<UICollectionViewCell> {
-        return Signal(callbacker: willDisplayCallbacker)
+        return Signal(callbacker: willDisplayCellCallbacker)
     }
 
     func didEndDisplayingSupplementaryView(forKind kind: String) -> Signal<UICollectionReusableView> {
