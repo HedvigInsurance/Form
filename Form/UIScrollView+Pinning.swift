@@ -10,12 +10,12 @@ import UIKit
 import Flow
 
 public extension UIScrollView {
-    public enum PinEdge {
+    enum PinEdge {
         case bottom
         case top
     }
 
-    public enum Pinning {
+    enum Pinning {
         case loose /// When scrolling the pinned view will follow along
         case spring /// As loose but the view won't create any gap between the edge and itself
         case fixed /// The pinned view will stay fixed at the top or bottom
@@ -124,7 +124,7 @@ public extension UIScrollView {
         }
 
         bag += subviewsSignal.onValue { _ in
-            self.bringSubview(toFront: view)
+            self.bringSubviewToFront(view)
         }
 
         constraints += [fix, spring].compactMap { $0 }
@@ -149,7 +149,8 @@ private extension UIScrollView {
 
         // Handle transitions views that are not custom (our zoom modal). How fragile is this logic?
         if let coord = viewController?.transitionCoordinator, coord.presentationStyle != .custom,
-            let containerView: UIView = (coord as? NSObject)?.value(forKey: "containerView") as? UIView { // Using value(forKey:) as non-optional coord.containerView might return nil on iOS 9
+            let containerView: UIView = (coord as? NSObject)?.value(forKey: "containerView") as? UIView,
+            self.isDescendant(of: containerView) { // Using value(forKey:) as non-optional coord.containerView might return nil on iOS 9
             parent = containerView
         } else if let superview = self.superview {
             parent = superview
@@ -229,13 +230,13 @@ private extension UIScrollView {
         }
 
         bag += subviewsSignal.onValue { _ in
-            self.bringSubview(toFront: view)
+            self.bringSubviewToFront(view)
         }
 
         // The parent moved between views when being presented and dismissed etc.
         // This mean we have to re-pin if that happens.
         // FIXME: In iOS 11 we should be able to use contentLayoutGuide instead of parent to setup our constraints and be able to remove this hack.
-        bag += combineLatest(parent.subviewsSignal.plain(), didMoveToWindowSignal).onValue { _ in
+        bag += combineLatest(parent.subviewsSignal, windowSignal).onValue { [weak parent] _ in
             guard let superView = self.superview, superView != parent else { return }
 
             let offset = self.contentOffset.y

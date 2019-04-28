@@ -11,21 +11,22 @@ import Flow
 
 public struct TextStyle: Style {
     fileprivate var changeIndex: Int = 0
-    private var extraAttributes = Set<NSAttributedStringKey>()
-    fileprivate var customAttributes = Set<NSAttributedStringKey>()
+    private var extraAttributes = Set<NSAttributedString.Key>()
+    fileprivate var customAttributes = Set<NSAttributedString.Key>()
 
-    public typealias Attributes = [NSAttributedStringKey: Any]
+    public typealias Attributes = [NSAttributedString.Key: Any]
     public private(set) var attributes: Attributes = [:]
 }
 
 public extension TextStyle {
-    public init(font: UIFont, color: UIColor, alignment: NSTextAlignment = .natural, numberOfLines: Int = 1, lineBreakMode: NSLineBreakMode = .byTruncatingMiddle) {
+    init(font: UIFont, color: UIColor, alignment: NSTextAlignment = .natural, numberOfLines: Int = 1, lineBreakMode: NSLineBreakMode = .byTruncatingMiddle, minimumScaleFactor: CGFloat = 0) {
         // Don't set attributes directly to make sure lookups such as equatableForAttribute is being correctly updated.
         self.font = font
         self.color = color
         self.numberOfLines = numberOfLines
         self.alignment = alignment
         self.lineBreakMode = lineBreakMode
+        self.minimumScaleFactor = minimumScaleFactor
     }
 }
 
@@ -50,19 +51,48 @@ public extension TextStyle {
         set { setParagraphAttribute(newValue, for: .lineBreakMode, defaultValue: .byTruncatingTail) { $0.lineBreakMode = newValue } }
     }
 
+    /// The amount of space between text's bounding boxes.
     var lineSpacing: CGFloat {
         get { return attribute(for: .lineSpacing) ?? 0 }
-        set { setParagraphAttribute(newValue, for: .lineSpacing, defaultValue: 0) { $0.lineSpacing = newValue } }
+        set {
+            /// We are currently not restricting line spacing to nonnegative values.
+            /// Even though the docs say "This value is always nonnegative", it can be negative and there are fonts that can benefit such corection.
+            /// However, the text position is not calculated properly with negative line spacing unless the `baselineOffset` is set.
+            if attribute(for: .baselineOffset) == nil {
+                setAttribute(0, for: .baselineOffset)
+            }
+            setParagraphAttribute(newValue, for: .lineSpacing, defaultValue: 0) { $0.lineSpacing = newValue }
+        }
     }
 
-    var kerning: Float {
+    /// The amount of space between baselines in a block of text.
+    /// - Note: The line height can't be set smaller than the font size. Beaware that setting smaller line height than the font line height may result in overlapping characters.
+    /// - Note: The line height can be affected by `font` and `lineSpacing` updates.
+    var lineHeight: CGFloat {
+        get { return (attribute(for: .lineSpacing) ?? 0) + font.lineHeight }
+        set { lineSpacing = max(newValue, font.pointSize) - font.lineHeight }
+    }
+
+    /// The uniform adjustment of the space between letters in text. Also referred to as tracking.
+    var letterSpacing: Float {
         get { return attribute(for: .kern) ?? 0 }
         set { setAttribute(newValue, for: .kern, defaultValue: 0) }
+    }
+
+    @available(*, deprecated, renamed: "letterSpacing")
+    var kerning: Float {
+        get { return letterSpacing }
+        set { letterSpacing = newValue }
     }
 
     var numberOfLines: Int {
         get { return attribute(for: .numberOfLines) ?? 1 }
         set { setAttribute(newValue == 1 ? nil : newValue, for: .numberOfLines) }
+    }
+
+    var minimumScaleFactor: CGFloat {
+        get { return attribute(for: .minimumScaleFactor) ?? 0 }
+        set { setAttribute(newValue, for: .minimumScaleFactor) }
     }
 
     var highlightedColor: UIColor {
@@ -80,11 +110,11 @@ public extension TextStyle {
 }
 
 public extension TextStyle {
-    func attribute<T>(for attribute: NSAttributedStringKey) -> T? {
+    func attribute<T>(for attribute: NSAttributedString.Key) -> T? {
         return attributes[attribute] as? T
     }
 
-    mutating func setAttribute<T: Equatable>(_ value: T?, for attribute: NSAttributedStringKey, defaultValue: T? = nil) {
+    mutating func setAttribute<T: Equatable>(_ value: T?, for attribute: NSAttributedString.Key, defaultValue: T? = nil) {
         guard self.attribute(for: attribute) != value else {
             return
         }
@@ -121,7 +151,7 @@ public extension TextStyle {
         }
     }
 
-    mutating func setParagraphAttribute<T: Equatable>(_ value: T?, for attribute: NSAttributedStringKey, defaultValue: T? = nil, update: (inout NSMutableParagraphStyle) -> ()) {
+    mutating func setParagraphAttribute<T: Equatable>(_ value: T?, for attribute: NSAttributedString.Key, defaultValue: T? = nil, update: (inout NSMutableParagraphStyle) -> ()) {
         guard self.attribute(for: attribute) != value else {
             return
         }
@@ -136,12 +166,17 @@ public extension TextStyle {
         var style = ((self.attribute(for: .paragraphStyle) as NSParagraphStyle?)?.mutableCopy() as? NSMutableParagraphStyle) ?? NSMutableParagraphStyle()
         update(&style)
         attributes[.paragraphStyle] = style
+
+        if equatableForAttribute[.paragraphStyle] == nil {
+            equatableForAttribute[.paragraphStyle] = { $0 as! NSMutableParagraphStyle == $1 as! NSMutableParagraphStyle }
+        }
+
     }
 
     /// Register a custom `transfrom` for `attribute`
     /// Custom transforms could be used to apply transforms on the styled text. The transforms are typlically applied after ordinary styling.
     /// For example `.uppercased`, etc. are built using custom transforms.
-    static func registerCustomTransform(for attribute: NSAttributedStringKey, transform: @escaping (NSAttributedString, Any) -> NSAttributedString) {
+    static func registerCustomTransform(for attribute: NSAttributedString.Key, transform: @escaping (NSAttributedString, Any) -> NSAttributedString) {
         precondition(Form.customAttributes[attribute] == nil)
         Form.customAttributes[attribute] = transform
     }
@@ -159,7 +194,7 @@ extension TextStyle: Equatable {
         }
 
         for (attribute, left) in lhs.attributes {
-            guard let right = rhs.attributes[attribute], attribute != .paragraphStyle else {
+            guard let right = rhs.attributes[attribute] else {
                 return false
             }
 
@@ -232,12 +267,13 @@ public struct StyledFieldText {
     }
 }
 
-extension NSAttributedStringKey {
-    static let numberOfLines = NSAttributedStringKey(rawValue: "_numberOfLines")
-    static let highlightedColor = NSAttributedStringKey(rawValue: "_highlightedColor")
-    static let lineBreakMode = NSAttributedStringKey(rawValue: "_lineBreakMode")
-    static let lineSpacing = NSAttributedStringKey(rawValue: "_lineSpacing")
-    static let textAlignment = NSAttributedStringKey(rawValue: "_textAligment")
+extension NSAttributedString.Key {
+    static let numberOfLines = NSAttributedString.Key(rawValue: "_numberOfLines")
+    static let highlightedColor = NSAttributedString.Key(rawValue: "_highlightedColor")
+    static let lineBreakMode = NSAttributedString.Key(rawValue: "_lineBreakMode")
+    static let lineSpacing = NSAttributedString.Key(rawValue: "_lineSpacing")
+    static let textAlignment = NSAttributedString.Key(rawValue: "_textAligment")
+    static let minimumScaleFactor = NSAttributedString.Key(rawValue: "_minimumScaleFactor")
 }
 
 extension TextStyle {
@@ -249,7 +285,7 @@ extension TextStyle {
 extension TextStyle {
     init(attributes: [String: Any]) {
         for (key, value) in attributes {
-            let attribute = NSAttributedStringKey(rawValue: key)
+            let attribute = NSAttributedString.Key(rawValue: key)
             self.attributes[attribute] = value
             guard !plainAttributes.contains(attribute) else {
                 continue
@@ -272,10 +308,12 @@ private extension TextStyle {
     }
 }
 
-private var equatableForAttribute = [NSAttributedStringKey: (Any, Any) -> Bool]()
+private var equatableForAttribute = [NSAttributedString.Key: (Any, Any) -> Bool]()
 private var nextTextStyleChangeIndex = 0
-private let plainAttributes: Set<NSAttributedStringKey> = [.foregroundColor, .font, .numberOfLines, .highlightedColor, .lineBreakMode, .textAlignment]
-private var customAttributes = [NSAttributedStringKey: ((NSAttributedString, Any) -> NSAttributedString)]()
+private let plainAttributes: Set<NSAttributedString.Key> = [
+    .foregroundColor, .font, .numberOfLines, .highlightedColor, .lineBreakMode, .textAlignment, .minimumScaleFactor
+]
+private var customAttributes = [NSAttributedString.Key: ((NSAttributedString, Any) -> NSAttributedString)]()
 
-private let prototypeCell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: nil)
+private let prototypeCell = UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: nil)
 private let prototypeLabel = UILabel(frame: .zero)

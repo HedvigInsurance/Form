@@ -23,14 +23,14 @@ public struct SwitchStyle: Style {
 }
 
 public extension SwitchStyle {
-    public static let system = SwitchStyle(switch: UISwitch())
-    public static var `default`: SwitchStyle { return DefaultStyling.current.switch }
+    static let system = SwitchStyle(switch: UISwitch())
+    static var `default`: SwitchStyle { return DefaultStyling.current.switch }
 }
 
 public extension UISwitch {
     convenience init(value: Bool, style: SwitchStyle = .default, accessibilityIdentifier: String? = nil) {
         self.init()
-        self.value = value
+        providedSignal.value = value
         self.accessibilityIdentifier = accessibilityIdentifier
 
         applyStyle(style)

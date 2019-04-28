@@ -56,7 +56,7 @@ public extension UITableViewCell {
 public extension UITableView {
     /// Dequeues (reuses) or creates a new cell with the style `style`.
     /// - Parameter reuseIdentifier: The reuse identifier for the cell, defaults to `#function`.
-    func dequeueCell(style: UITableViewCellStyle = .default, reuseIdentifier: String = #function) -> UITableViewCell {
+    func dequeueCell(style: UITableViewCell.CellStyle = .default, reuseIdentifier: String = #function) -> UITableViewCell {
         return dequeueReusableCell(withIdentifier: reuseIdentifier) ?? UITableViewCell(style: style, reuseIdentifier: reuseIdentifier)
     }
 
@@ -120,6 +120,7 @@ public extension UITableViewCell {
         let reorderViewTag = 473659834
         if let reorderControlView = reorderControlView {
             let resizedGripView = viewWithTag(reorderViewTag) ?? TapThroughView()
+            resizedGripView.transform = .identity
             resizedGripView.frame = bounds
             resizedGripView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             resizedGripView.backgroundColor = .clear

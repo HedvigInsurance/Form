@@ -20,33 +20,33 @@ public struct TableViewFormStyle: Style {
 
 public extension DynamicTableViewFormStyle {
     /// Returns the currently used form style.
-    public var form: DynamicFormStyle {
+    var form: DynamicFormStyle {
         return DynamicFormStyle { self.style(from: $0).form }
     }
 
     /// Returns the currently used section style.
-    public var section: DynamicSectionStyle {
+    var section: DynamicSectionStyle {
         return DynamicSectionStyle { self.style(from: $0).section }
     }
 
     /// Returns the currently used section header style.
-    public var header: DynamicHeaderFooterStyle {
+    var header: DynamicHeaderFooterStyle {
         return DynamicHeaderFooterStyle { self.style(from: $0).section.header }
     }
 
     /// Returns the currently used section footer style.
-    public var footer: DynamicHeaderFooterStyle {
+    var footer: DynamicHeaderFooterStyle {
         return DynamicHeaderFooterStyle { self.style(from: $0).section.footer }
     }
 }
 
 public struct DynamicTableViewFormStyle: DynamicStyle {
-    public var tableStyle: UITableViewStyle
+    public var tableStyle: UITableView.Style
     public var styleGenerator: (UITraitCollection) -> TableViewFormStyle
 }
 
 public extension DynamicTableViewFormStyle {
-    init(section: @autoclosure @escaping () -> DynamicSectionStyle, form: @autoclosure @escaping () -> DynamicFormStyle, tableStyle: UITableViewStyle = .grouped, fixedRowHeight: CGFloat? = nil, fixedHeaderHeight: CGFloat? = nil, fixedFooterHeight: CGFloat? = nil) {
+    init(section: @autoclosure @escaping () -> DynamicSectionStyle, form: @autoclosure @escaping () -> DynamicFormStyle, tableStyle: UITableView.Style = .grouped, fixedRowHeight: CGFloat? = nil, fixedHeaderHeight: CGFloat? = nil, fixedFooterHeight: CGFloat? = nil) {
         self.tableStyle = tableStyle
         styleGenerator = { (styleInput: UITraitCollection) in
             return TableViewFormStyle(section: section().style(from: styleInput), form: form().style(from: styleInput), fixedRowHeight: fixedRowHeight, fixedHeaderHeight: fixedRowHeight, fixedFooterHeight: fixedFooterHeight)

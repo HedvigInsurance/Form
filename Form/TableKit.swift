@@ -29,10 +29,10 @@ public final class TableKit<Section, Row> {
     public var table: Table {
         get { return dataSource.table }
         set {
-            dataSource.table = table
-            delegate.table = table
+            dataSource.table = newValue
+            delegate.table = newValue
             view.reloadData()
-            callbacker.callAll(with: table)
+            callbacker.callAll(with: newValue)
         }
     }
 
@@ -50,38 +50,53 @@ public final class TableKit<Section, Row> {
         }
     }()
 
-    /// Delegate to retreive a view to be displayed when the table is empty.
-    /// The view will be constrained to the edges of the table
-    ///
-    /// - Parameter animationDuration: The duration of the fade in/out animation when showing/hiding the empty view
-    /// - Returns: A delegate object capturing the logic for creating an empty view
-    public func viewForEmptyTable(fadeDuration: TimeInterval = 0.15) -> Delegate<(), UIView> {
-        return Delegate { [weak self] getEmptyView in
-            let bag = DisposeBag()
-            guard let `self` = self else { return bag }
+    private lazy var viewForDurationForEmptyTable: Delegate<(), (view: UIView, duration: TimeInterval)> = {
+        return Delegate { [weak self] getArgs in
+            guard let `self` = self else { return NilDisposer() }
 
+            let bag = DisposeBag()
             var currentView: UIView?
+            var previousDuration: TimeInterval?
             bag += self.atOnce().onValue { table in
-                if let prevView = currentView {
+                let args = getArgs(())
+
+                if let prevView = currentView, let duration = previousDuration {
                     currentView = nil
-                    UIView.animate(withDuration: fadeDuration,
+                    UIView.animate(withDuration: duration,
                                    animations: { prevView.alpha = 0 },
                                    completion: { _ in prevView.removeFromSuperview()  })
                 }
 
                 if table.isEmpty {
-                    let emptyView = getEmptyView(())
+                    let emptyView = args.view
                     emptyView.alpha = 0
                     self.view.embedAutoresizingView(emptyView)
-                    self.view.sendSubview(toBack: emptyView)
+                    self.view.sendSubviewToBack(emptyView)
                     currentView = emptyView
-                    UIView.animate(withDuration: fadeDuration) { emptyView.alpha = 1 }
+                    previousDuration = args.duration
+                    UIView.animate(
+                        withDuration: args.duration,
+                        animations: { emptyView.alpha = 1 }
+                    )
                 }
             }
 
             bag += { currentView?.removeFromSuperview() }
 
             return bag
+        }
+    }()
+
+    /// Delegate to retreive a view to be displayed when the table is empty.
+    /// The view will be constrained to the edges of the table
+    ///
+    /// - Parameter animationDuration: The duration of the fade in/out animation when showing/hiding the empty view
+    /// - Returns: A delegate object capturing the logic for creating an empty view
+    public func viewForEmptyTable(fadeDuration: TimeInterval = 0.15) -> Delegate<(), UIView> {
+        return Delegate { getEmptyView in
+            return self.viewForDurationForEmptyTable.set { _ in
+                return (view: getEmptyView(()), fadeDuration)
+            }
         }
     }
 
@@ -106,7 +121,7 @@ public final class TableKit<Section, Row> {
             view.cellLayoutMarginsFollowReadableWidth = false
         }
 
-        view.rowHeight = UITableViewAutomaticDimension
+        view.rowHeight = UITableView.automaticDimension
 
         let tableHeader = UIView()
         let tableHeaderConstraint = activate(tableHeader.heightAnchor == 0)
@@ -125,10 +140,10 @@ public final class TableKit<Section, Row> {
 
             view.estimatedRowHeight = style.fixedRowHeight ?? style.section.minRowHeight
 
-            view.sectionHeaderHeight = UITableViewAutomaticDimension
-            view.sectionFooterHeight = UITableViewAutomaticDimension
-            view.estimatedSectionHeaderHeight = style.fixedHeaderHeight ?? UITableViewAutomaticDimension
-            view.estimatedSectionFooterHeight = style.fixedFooterHeight ?? UITableViewAutomaticDimension
+            view.sectionHeaderHeight = UITableView.automaticDimension
+            view.sectionFooterHeight = UITableView.automaticDimension
+            view.estimatedSectionHeaderHeight = style.fixedHeaderHeight ?? UITableView.automaticDimension
+            view.estimatedSectionFooterHeight = style.fixedFooterHeight ?? UITableView.automaticDimension
 
             if view.autoResizingTableHeaderView === tableHeader {
                tableHeaderConstraint.constant = style.form.insets.top
@@ -138,14 +153,14 @@ public final class TableKit<Section, Row> {
                 tableFooterConstraint.constant = style.form.insets.bottom
             }
 
-            self.delegate.cellHeight = style.fixedRowHeight ?? UITableViewAutomaticDimension
+            self.delegate.cellHeight = style.fixedRowHeight ?? UITableView.automaticDimension
 
-            self.delegate.headerHeight = style.fixedHeaderHeight ?? (headerForSection == nil ? style.section.header.emptyHeight : UITableViewAutomaticDimension)
+            self.delegate.headerHeight = style.fixedHeaderHeight ?? (headerForSection == nil ? style.section.header.emptyHeight : UITableView.automaticDimension)
             if self.delegate.headerHeight == 0 { // 0 has special meaning, not what we want
                 self.delegate.headerHeight = .headerFooterAlmostZero
             }
 
-            self.delegate.footerHeight = style.fixedFooterHeight ?? (footerForSection == nil ? style.section.footer.emptyHeight : UITableViewAutomaticDimension)
+            self.delegate.footerHeight = style.fixedFooterHeight ?? (footerForSection == nil ? style.section.footer.emptyHeight : UITableView.automaticDimension)
             if self.delegate.footerHeight == 0 { // 0 has special meaning, not what we want
                 self.delegate.footerHeight = .headerFooterAlmostZero
             }
@@ -251,6 +266,22 @@ public extension TableKit where Row: Reusable, Row.ReuseType: ViewRepresentable,
     }
 }
 
+public extension TableKit where Row: Reusable, Row.ReuseType: ViewRepresentable, Section: HeaderFooterReusable, Section.Header.ReuseType: ViewRepresentable, Section.Footer.ReuseType: ViewRepresentable {
+    /// Creates a new instance
+    /// - Parameters:
+    ///   - table: The initial table. Defaults to an empty table.
+    ///   - bag: A bag used to add table kit activities.
+    convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, bag: DisposeBag) {
+        self.init(table: table, style: style, view: view, bag: bag, headerForSection: { table, section in
+            table.dequeueHeaderFooterView(forItem: section.header, style: style.header, formStyle: style.form, reuseIdentifier: "header")
+        }, footerForSection: { table, section in
+            table.dequeueHeaderFooterView(forItem: section.footer, style: style.footer, formStyle: style.form, reuseIdentifier: "footer")
+        }, cellForRow: { table, row in
+            table.dequeueCell(forItem: row, style: style)
+        })
+    }
+}
+
 extension TableKit: SignalProvider {
     public var providedSignal: ReadWriteSignal<Table> {
         return ReadSignal(capturing: self.table, callbacker: callbacker).writable(signalOnSet: true) { self.table = $0 }
@@ -291,7 +322,7 @@ extension TableKit: TableAnimatable {
         for indexPath in view.indexPathsForVisibleRows ?? [] {
             guard let tableIndex = TableIndex(indexPath, in: self.table) else { continue }
             let row = table[tableIndex]
-            guard let index = from.index(where: { rowIdentifier(row) == rowIdentifier($0) }) else { continue }
+            guard let index = from.firstIndex(where: { rowIdentifier(row) == rowIdentifier($0) }) else { continue }
 
             if let cell = view.cellForRow(at: indexPath) {
                 cell.updateBackground(forStyle: style, tableView: view, at: indexPath)
@@ -338,7 +369,7 @@ public extension TableKit {
     /// - Parameter position: A constant that identifies a relative position in the table view (top, middle, bottom).
     /// - Parameter indexPath: Closure with the new inserted table indices as parameter and returning the table index to scroll to.
     ///     Defaults to scroll to the first inserted row.
-    public func scollToRevealInsertedRows(position: UITableViewScrollPosition = .none, indexPath: @escaping ([TableIndex]) -> TableIndex? = { return $0.first }) -> Disposable {
+    func scollToRevealInsertedRows(position: UITableView.ScrollPosition = .none, indexPath: @escaping ([TableIndex]) -> TableIndex? = { return $0.first }) -> Disposable {
         // throttle 0 so it does not conflict with the insertion animation
         return Flow.combineLatest(view.hasWindowSignal.atOnce().plain(), changesSignal).compactMap { $0 ? $1 : nil }.debounce(0).onValue { (changes) in
             let insertions = changes.compactMap { change -> TableIndex? in
@@ -394,7 +425,7 @@ public extension MasterDetailSelection where Elements.Index == TableIndex {
             if let index = current?.index {
                 guard let indexPath = IndexPath(index, in: tableKit.table) else { return }
                 let isVisible = tableKit.view.indexPathsForVisibleRows?.contains(indexPath) ?? false
-                let scrollPosition: UITableViewScrollPosition
+                let scrollPosition: UITableView.ScrollPosition
                 if let prevIndex = prev?.index {
                     scrollPosition = (prevIndex < index ? .bottom : .top)
                 } else {

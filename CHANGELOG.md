@@ -1,3 +1,33 @@
+## 1.9.0
+- Bugfix: Make sure to remove the old empty state view from a table after setting a new empty state view [#99](https://github.com/iZettle/Form/issues/99).
+- Add minimum scale factor to TextStyle. When a custom value is set that can also affect other controls using TextStyle, e.g UIButton.
+
+## 1.8.0
+- Migrate to swift 5
+
+## 1.7.1
+- Bugfix: Fix UILabel styling bug when a styled label's text is set to nil and then updating its value does nothing.
+
+## 1.7.0
+- Adds new `HeaderFooterReusable` protocol to allow providing separate `Reusable` types for rendering a section's header and footer.
+- Adds letter spacing and line height to `TextStyle`.
+- Adds target offset to `willEndDragging` signal of `ScrollViewDelegate`.
+- Adds will display cell signal to `CollectionViewDelegate`.
+
+## 1.6.3
+- Performace. Added custom `count` implementation for `TableSection` to improve performance of e.g. `Table.isValidIndex` that might be called a lot for large tables.
+
+## 1.6.2
+- Bugfix: Setting `table` direclty on `TableKit` or `CollectionKit` did not reload the view correctly with the updated table.
+
+## 1.6.1
+- Bugfix: Fix layout problem caused by pinning a view to UITransitionView that is no longer shown on iOS 9/10
+- Bugfix: Activate constraints before calls to layoutIfNeeded to prevent crashes on iOS 9/10 when embedding views in a scrollView
+
+## 1.6.0
+- Add sizeForItemAt for CollectionViewDelegate
+- Bugfix: Fix table view cells reorder control position to respect insets
+
 ## 1.5.0
 - Add optional preferred minimum size to ButtonStyle
 
@@ -49,7 +79,7 @@
 - Added new table and collection view overloads of dequeueCell taking a re-configure closure.
 - Added didEndDisplayingCell signal to TableViewDelegate
 
-- Deprecating `EitherRow`, replaced by using Flows `Either` instead 
+- Deprecating `EitherRow`, replaced by using Flows `Either` instead
 - Deprecating `dequeueCell(forItem:, style:, reuseIdentifier:)`, replaced by version not using explicit `reuseIdentifier`
 
 - Fixed issue where Reusable configure was called instead of reconfigure when rows was updated.
@@ -70,7 +100,7 @@
 
 ## 1.0.1
 
-- Updated podspec to allow using features behind canImport(Presentation) 
+- Updated podspec to allow using features behind canImport(Presentation)
 
 # 1.0
 
