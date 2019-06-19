@@ -54,11 +54,7 @@ public final class CollectionKit<Section, Row> {
             // Auto update the table
             self.table.moveElement(from: source, to: destination)
         }
-
-        bag += delegate.didEndDisplayingCell.onValue { cell in
-            cell.releaseBag(forType: Row.self)
-        }
-
+        
         bag += {
             for cell in self.view.visibleCells {
                 cell.releaseBag(forType: Row.self)
