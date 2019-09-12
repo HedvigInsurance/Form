@@ -36,6 +36,7 @@ public final class TableViewDelegate<Section, Row>: ScrollViewDelegate, UITableV
     public var shouldAutomaticallyDeselect = true
     public var selectionAllowed = Delegate<TableIndex, Bool>()
     public var editingStyle = Delegate<TableIndex, UITableViewCell.EditingStyle>()
+    public var heightForCell = Delegate<TableIndex, CGFloat>()
 
     public init(table: Table<Section, Row> = Table()) {
         self.table = table
@@ -83,7 +84,8 @@ public final class TableViewDelegate<Section, Row>: ScrollViewDelegate, UITableV
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return cellHeight
+        guard let tableIndex = TableIndex(indexPath, in: table) else { return cellHeight }
+        return heightForCell.call(tableIndex) ?? cellHeight
     }
 
     public func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
