@@ -6,7 +6,7 @@
 //  Copyright © 2017 iZettle. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Flow
 
 public extension UITextField {
@@ -58,6 +58,10 @@ public extension UITextField {
             let styledText = StyledText(text: text ?? "", style: newValue.text)
             attributedText = NSAttributedString(styledText: styledText)
             attributedPlaceholder = NSAttributedString(text: placeholder ?? "", style: newValue.placeholder)
+
+            if #available(iOS 10.0, *) {
+                self.refreshTextScaling(for: newValue.text)
+            }
 
             textAlignment = newValue.text.alignment
 

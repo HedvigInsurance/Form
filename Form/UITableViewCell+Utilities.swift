@@ -100,20 +100,15 @@ public extension UITableView {
             return (UITableViewCell(view: viewRepresentable.viewRepresentation, reuseIdentifier: reuseIdentifier, style: style), reconfigure)
         })
     }
-
-    @available(*, deprecated, message: "use `dequeueCell` version not using explicit `reuseIdentifier` parameter instead")
-    func dequeueCell<Item: Reusable>(forItem item: Item, style: DynamicTableViewFormStyle = .default, reuseIdentifier: String) -> UITableViewCell where Item.ReuseType: ViewRepresentable {
-        return dequeueCell(forItem: item, reuseIdentifier: reuseIdentifier, cellAndReconfigure: { reuseIdentifier in
-            let (viewRepresentable, configure) = Item.makeAndReconfigure()
-            return (UITableViewCell(view: viewRepresentable.viewRepresentation, reuseIdentifier: reuseIdentifier, style: style), configure)
-        })
-    }
 }
 
 public extension UITableViewCell {
     func applyFormStyle(_ style: TableViewFormStyle) {
 
         contentView.backgroundColor = .clear
+
+        (backgroundView as? CellBackgroundView)?.applyStyle(style)
+        (selectedBackgroundView as? CellBackgroundView)?.applyStyle(style)
 
         // Workaround for the reorder icon
         let reorderViewTag = 473659834

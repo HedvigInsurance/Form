@@ -23,7 +23,7 @@ extension DefaultStyling {
         current = .custom
     }
 
-    static let custom = DefaultStyling(
+    static var custom: DefaultStyling { return DefaultStyling(
         text: .normalText,
         field: FieldStyle(text: .normalText, placeholder: .placeholderText, disabled: .disabledText, cursorColor: .mintGreen),
         detailText: TitleSubtitleStyle.custom.subtitle,
@@ -42,10 +42,10 @@ extension DefaultStyling {
         plainTableView: ListTableView.self,
         groupedTableView: FormTableView.self,
         collectionView: UICollectionView.self
-    )
+    )}
 }
 
-let isIpad = UIDevice.current.userInterfaceIdiom == .pad
+var isRegular: Bool { return UIApplication.shared.keyWindow?.traitCollection.horizontalSizeClass == .regular }
 
 extension UIColor {
     static let backgroundGray = UIColor(hue: 0, saturation: 0, brightness: 0.98, alpha: 1)
@@ -72,10 +72,20 @@ extension UIColor {
 }
 
 extension UIFont {
-    static let normalText = UIFont.systemFont(ofSize: isIpad ? 18 : 17, weight: .medium)
-    static let smallText = UIFont.systemFont(ofSize: 14, weight: .regular)
-    static let regularButton = UIFont.systemFont(ofSize: isIpad ? 20 : 19, weight: .medium)
-    static let headerText = UIFont.systemFont(ofSize: 13, weight: .medium)
+    static let normalTextStatic: UIFont = {
+        if #available(iOS 10.0, *) {
+            return UIFont.preferredFont(
+                forTextStyle: .body,
+                compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)
+            )
+        } else {
+            return UIFont.systemFont(ofSize: 17, weight: .medium)
+        }
+    }()
+    static let normalText = UIFont.preferredFont(forTextStyle: .body)
+    static let smallText = UIFont.preferredFont(forTextStyle: .callout)
+    static let regularButton = UIFont.preferredFont(forTextStyle: .title3)
+    static let headerText = UIFont.preferredFont(forTextStyle: .subheadline)
 }
 
 extension TextStyle {
@@ -97,7 +107,7 @@ extension TitleSubtitleStyle {
 }
 
 extension BorderStyle {
-    static let bottomSeparator = BorderStyle(width: UIScreen.main.thinestLineWidth, color: .separator, cornerRadius: 0, borderEdges: .bottom)
+    static let bottomSeparator = BorderStyle(width: UIScreen.main.hairlineWidth, color: .separator, cornerRadius: 0, borderEdges: .bottom)
 }
 
 extension ButtonStyle {
@@ -108,7 +118,9 @@ extension ButtonStyle {
 }
 
 extension BarButtonStyle {
-    static let custom = BarButtonStyle(text: TextStyle.normalText.colored(.mintGreenDark))
+    static let custom = BarButtonStyle(text: TextStyle.normalText.colored(.mintGreenDark).restyled {
+        $0.font = .normalTextStatic
+    })
 }
 
 extension SwitchStyle {
@@ -116,11 +128,12 @@ extension SwitchStyle {
 }
 
 extension SegmentedControlStyle {
+
     static let custom = SegmentedControlStyle(
-        normal: .init(color: .white, border: .init(width: UIScreen.main.thinestLineWidth, color: .lineGray, cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.mintGreen).resized(to: 15)),
-        highlighted: .init(color: .mintGreenDark, border: .init(cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.white).resized(to: 15)),
-        disabled: .init(color: .mintGreen, border: .init(cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.textGray).resized(to: 15)),
-        selected: .init(color: .mintGreen, border: .init(cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.white).resized(to: 15)),
+        normal: ButtonStateStyle(color: .white, border: .init(width: UIScreen.main.hairlineWidth, color: .lineGray, cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.mintGreen).resized(to: 15)),
+        highlighted: ButtonStateStyle(color: .mintGreenDark, border: .init(cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.white).resized(to: 15)),
+        disabled: ButtonStateStyle(color: .mintGreen, border: .init(cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.textGray).resized(to: 15)),
+        selected: ButtonStateStyle(color: .mintGreen, border: .init(cornerRadius: 4), text: TextStyle.normalText.centerAligned.colored(.white).resized(to: 15)),
         tintColor: .mintGreen
     )
 }
@@ -147,7 +160,7 @@ extension DynamicFormStyle {
 
 extension SectionStyle {
     init(traits: UITraitCollection, type: FormType) {
-        let rowInsets = UIEdgeInsets(horizontalInset: isIpad ? 18 : 16, verticalInset: isIpad ? 14 : 13)
+        let rowInsets = UIEdgeInsets(horizontalInset: traits.isRegular ? 18 : 16, verticalInset: traits.isRegular ? 14 : 13)
 
         let background, selectedBackground: Background
         switch (type, traits.horizontalSizeClass) {
@@ -175,17 +188,17 @@ extension SectionStyle {
                                             emptyHeight: 0)
 
         let header, footer: HeaderFooterStyle
-        switch (type, traits.userInterfaceIdiom) {
+        switch (type, traits.horizontalSizeClass) {
         case (.list, _), (_, .unspecified):
             header = headerStyle.restyled {
                 $0.text = TextStyle.header.uppercased
                 $0.backgroundImage = .plainSectionHeader
             }
             footer = footerStyle
-        case (.form, .phone):
+        case (.form, .compact):
             header = headerStyle
             footer = footerStyle
-        case (.form, .pad):
+        case (.form, .regular):
             header = headerStyle.restyled {
                 $0.insets.top = 0
                 $0.backgroundImage = .none
@@ -207,9 +220,9 @@ extension DynamicSectionStyle {
 }
 
 extension SectionBackgroundStyle {
-    static let plain = SectionBackgroundStyle(background: BackgroundStyle(color: .standardSectionBackground, border: BorderStyle(width: UIScreen.main.thinestLineWidth, color: .separator, cornerRadius: 0, borderEdges: [.top, .bottom])),
+    static let plain = SectionBackgroundStyle(background: BackgroundStyle(color: .standardSectionBackground, border: BorderStyle(width: UIScreen.main.hairlineWidth, color: .separator, cornerRadius: 0, borderEdges: [.top, .bottom])),
                                                      topSeparator: .none,
-                                                     bottomSeparator: InsettedStyle(style: SeparatorStyle(width: UIScreen.main.thinestLineWidth, color: .separator), insets: UIEdgeInsets(horizontalInset: 0, verticalInset: 0)))
+                                                     bottomSeparator: InsettedStyle(style: SeparatorStyle(width: UIScreen.main.hairlineWidth, color: .separator), insets: UIEdgeInsets(horizontalInset: 0, verticalInset: 0)))
 
     static let plainSelected = SectionBackgroundStyle.plain.restyled { style in
         style.color = .plainSelection
@@ -223,7 +236,7 @@ extension SectionBackgroundStyle {
 
     static let grouped = SectionBackgroundStyle.plain.restyled { style in
         style.bottomSeparator.insets = .zero
-        style.border = BorderStyle(width: UIScreen.main.thinestLineWidth, color: .separator, cornerRadius: 8)
+        style.border = BorderStyle(width: UIScreen.main.hairlineWidth, color: .separator, cornerRadius: 8)
     }
 
     static let groupedSelected = SectionBackgroundStyle.grouped.restyled { style in
@@ -243,16 +256,16 @@ extension SectionStyle.Background {
 }
 
 extension CGFloat {
-    static let standardRowHeight: CGFloat = isIpad ? 60 : 56
-    static let standardItemSpacing: CGFloat = isIpad ? 12 : 10
+    static var standardRowHeight: CGFloat { return isRegular ? 60 : 56 }
+    static var standardItemSpacing: CGFloat { return isRegular ? 12 : 10 }
     static let standardHeaderHeight: CGFloat = 34
     static let standardFooterHeight: CGFloat = 22
 }
 
 extension UIImage {
-    static let plainSectionHeader = UIImage(color: .modalFormBackground, border: .bottomSeparator)
-    static let plainFormSectionHeader = UIImage(color: .modalFormBackground, border: .none)
-    static let plainSectionFooter = UIImage(color: .clear, border: .none)
+    static let plainSectionHeader = SegmentBackgroundStyle(color: .modalFormBackground, border: .bottomSeparator)?.image()
+    static let plainFormSectionHeader = SegmentBackgroundStyle(color: .modalFormBackground, border: .none)?.image()
+    static let plainSectionFooter = SegmentBackgroundStyle(color: .clear, border: .none)?.image()
 }
 
 final class FormScrollView: UIScrollView { }

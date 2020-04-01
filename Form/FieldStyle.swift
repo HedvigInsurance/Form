@@ -6,7 +6,7 @@
 //  Copyright © 2017 iZettle. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Flow
 
 public struct FieldStyle: Style {
@@ -106,7 +106,7 @@ public extension FieldStyle {
 
 public extension UIKeyboardType {
     /// `.numberPad` if iPhone or `.numbersAndPunctuation` if iPad.
-    static let numeric: UIKeyboardType = UIDevice.current.userInterfaceIdiom == .pad ? .numbersAndPunctuation : .numberPad
+    static var numeric: UIKeyboardType { return (UIApplication.shared.keyWindow?.traitCollection.horizontalSizeClass == .regular) ? .numbersAndPunctuation : .numberPad }
     /// `.numbersAndPunctuation`
     static let decimal: UIKeyboardType = .numbersAndPunctuation
 }

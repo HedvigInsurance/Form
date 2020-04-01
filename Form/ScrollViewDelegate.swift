@@ -3,7 +3,7 @@
 // Copyright (c) 2018 iZettle. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Flow
 
 public class ScrollViewDelegate: NSObject, UIScrollViewDelegate {
@@ -106,11 +106,6 @@ public extension ScrollViewDelegate {
 
     var willBeginDragging: Signal<()> {
         return Signal(callbacker: willBeginDraggingCallbacker)
-    }
-
-    @available(*, deprecated, renamed: "willEndDragging")
-    var willEndDraggingWithVelocity: Signal<CGPoint> {
-        return willEndDragging.map { $0.velocity }
     }
 
     var willEndDragging: Signal<(velocity: CGPoint, targetContentOffset: CGPoint?)> {

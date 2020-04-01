@@ -1,7 +1,36 @@
+## 2.1.0
+- Added: Optional `adjustsFontForContentSizeCategory` property to specify on a TextStyle
+
+## 2.0.6
+- Bugfix: Prevent corner case tablekit crash when the table is updated while reloading the view
+
+## 2.0.5
+- Bugfix: Prevent TableKit scrolling on row selection when no rows are visible (see #145).
+
+## 2.0.4
+- Bugfix: Re-apply form style to table cell backgrounds when reusing them and reloading data 
+
+## 2.0.3
+- Improvement: Improved size class handling to better support iPad multitasking, removed all hard references to device type.
+
+## 2.0.2
+- Bugfix: Fix issue with `scrollToRevealFirstResponder` ([#122](https://github.com/iZettle/Form/issues/122))
+
+## 2.0.1
+- Bugfix: Fixed a bug where `ButtonStateStyle.init` was wrongfully failable, which could lead to buttons not receiving their text style.
+
+## 2.0
+- Added: Support for Swift Package Manager
+- Change: Deprecate registerViewForSupplementaryElement and add a new one that works with UICollectionView headers and footers
+- Change: Bump the minimum required version of Presentation to 1.9.0
+- Added: New initializers for RowsSelection that works with the latest version of Presentation framework. The old one is deprecated.
+- Change: Removed deprecated functions, symbols etc.
+
 ## 1.10.5
 - Bugfix: Fixed scroll-to-top not working correctly.
 - Addition: Add new initializers for TableKit and CollectionKit that have an explicit `holdIn` parameter to keep subscriptions.
 - Change: Change the deprecation warning of TableKit and CollectionKit initializers to point to the new ones
+- Change: Remove Objective-C utilities function and use a designatyed type for the section segment background style.
 
 ## 1.10.4
 - Bugfix: Fix issue with ui refresh deadlock

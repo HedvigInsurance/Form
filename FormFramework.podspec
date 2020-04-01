@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "FormFramework"
-  s.version      = "1.10.5"
+  s.version      = "2.1.0"
   s.module_name  = "Form"
   s.summary      = "Powerful iOS layout and styling"
   s.description  = <<-DESC
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Presentation' do |presentation|
-    presentation.dependency 'PresentationFramework', '~> 1.1'
+    presentation.dependency 'PresentationFramework', '~> 1.9.0'
   end
 
   s.source       = { :git => "https://github.com/iZettle/Form.git", :tag => "#{s.version}" }

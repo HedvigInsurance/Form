@@ -37,20 +37,6 @@ public final class TableKit<Section, Row> {
         }
     }
 
-    /// Delegate to retreive a view to be displayed when table is empty.
-    @available(*, deprecated, message: "use `viewForEmptyTable(fadeDuration:)` instead")
-    public lazy var viewForEmptyTable: Delegate<(), UIView> = {
-        return Delegate { [weak self] getEmptyView in
-            guard let `self` = self else { return NilDisposer() }
-
-            return self.viewForEmptyTable().set { _ in
-                UIView(embeddedView: getEmptyView(()),
-                       edgeInsets: UIEdgeInsets(horizontalInset: 15, verticalInset: 15),
-                       pinToEdges: [.left, .right])
-            }
-        }
-    }()
-
     private lazy var viewForDurationForEmptyTable: Delegate<(), (view: UIView, duration: TimeInterval)> = {
         return Delegate { [weak self] getArgs in
             guard let `self` = self else { return NilDisposer() }
@@ -249,7 +235,7 @@ public final class TableKit<Section, Row> {
 
         if let hfs = headerForSection {
             bag += delegate.viewForHeaderInSection.set { [weak self] section in
-                guard let `self` = self else { return nil }
+                guard let `self` = self, section < self.table.sections.count else { return nil }
                 return hfs(self.view, self.table.sections[section].value)
             }
         } else {
@@ -260,7 +246,7 @@ public final class TableKit<Section, Row> {
 
         if let ffs = footerForSection {
             bag += delegate.viewForFooterInSection.set { [weak self] section in
-                guard let `self` = self else { return nil }
+                guard let `self` = self, section < self.table.sections.count else { return nil }
                 return ffs(self.view, self.table.sections[section].value)
             }
         } else {
@@ -278,11 +264,6 @@ public extension TableKit {
     convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, headerForSection: ((UITableView, Section) -> UIView?)? = nil, footerForSection: ((UITableView, Section) -> UIView?)? = nil, cellForRow: @escaping (UITableView, Row) -> UITableViewCell) {
         self.init(table: table, style: style, view: view, holdIn: nil, headerForSection: headerForSection, footerForSection: footerForSection, cellForRow: cellForRow)
     }
-
-    @available(*, deprecated, message: "use `init(table:style:view:holdIn:headerForSection:footerForSection:cellForRow:)` instead")
-    convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, bag: DisposeBag, headerForSection: ((UITableView, Section) -> UIView?)? = nil, footerForSection: ((UITableView, Section) -> UIView?)? = nil, cellForRow: @escaping (UITableView, Row) -> UITableViewCell) {
-        self.init(table: table, style: style, view: view, holdIn: bag, headerForSection: headerForSection, footerForSection: footerForSection, cellForRow: cellForRow)
-    }
 }
 
 public extension TableKit where Row: Reusable, Row.ReuseType: ViewRepresentable {
@@ -293,11 +274,6 @@ public extension TableKit where Row: Reusable, Row.ReuseType: ViewRepresentable 
         self.init(table: table, style: style, view: view, headerForSection: headerForSection, footerForSection: footerForSection) { table, row in
             table.dequeueCell(forItem: row, style: style)
         }
-    }
-
-    @available(*, deprecated, message: "use `init(table:style:view:holdIn:headerForSection:footerForSection:)` instead")
-    convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, bag: DisposeBag, headerForSection: ((UITableView, Section) -> UIView?)? = nil, footerForSection: ((UITableView, Section) -> UIView?)? = nil) {
-        self.init(table: table, style: style, view: view, holdIn: bag, headerForSection: headerForSection, footerForSection: footerForSection)
     }
 
     convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, holdIn externalBag: DisposeBag, headerForSection: ((UITableView, Section) -> UIView?)? = nil, footerForSection: ((UITableView, Section) -> UIView?)? = nil) {
@@ -317,11 +293,6 @@ public extension TableKit where Row: Reusable, Row.ReuseType: ViewRepresentable,
         }, footerForSection: footerForSection, cellForRow: { table, row in
             table.dequeueCell(forItem: row, style: style)
         })
-    }
-
-    @available(*, deprecated, message: "use `init(table:style:view:holdIn:footerForSection:)` instead")
-    convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, bag: DisposeBag, footerForSection: ((UITableView, Section) -> UIView?)? = nil) {
-        self.init(table: table, style: style, view: view, holdIn: bag, footerForSection: footerForSection)
     }
 
     convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, holdIn externalBag: DisposeBag, footerForSection: ((UITableView, Section) -> UIView?)? = nil) {
@@ -345,11 +316,6 @@ public extension TableKit where Row: Reusable, Row.ReuseType: ViewRepresentable,
         }, cellForRow: { table, row in
             table.dequeueCell(forItem: row, style: style)
         })
-    }
-
-    @available(*, deprecated, message: "use `init(table:style:view:holdIn)` instead")
-    convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, bag: DisposeBag) {
-        self.init(table: table, style: style, view: view, holdIn: bag)
     }
 
     convenience init(table: Table = Table(), style: DynamicTableViewFormStyle = .default, view: UITableView? = nil, holdIn externalBag: DisposeBag) {
@@ -500,27 +466,77 @@ import Presentation
 
 public extension MasterDetailSelection where Elements.Index == TableIndex {
     func bindTo<Row, Section>(_ tableKit: TableKit<Row, Section>) -> Disposable {
+        return self.map { $0?.index }.bindTo(tableKit, select: self.select)
+    }
+}
+
+#endif
+
+public extension SignalProvider where Kind.DropWrite == Read, Value == TableIndex? {
+    func bindTo<Row, Section>(
+        _ tableKit: TableKit<Row, Section>,
+        animateSelectionChange: Bool = true,
+        select: @escaping (TableIndex) -> Void
+    ) -> Disposable {
         let bag = DisposeBag()
         tableKit.delegate.shouldAutomaticallyDeselect = false
         bag += self.atOnce().latestTwo().onValue { prev, current in
-            if let index = current?.index {
-                guard let indexPath = IndexPath(index, in: tableKit.table) else { return }
-                let isVisible = tableKit.view.indexPathsForVisibleRows?.contains(indexPath) ?? false
+            if let index = current {
+                guard let indexPath = IndexPath(index, in: tableKit.table) else {
+                    return
+                }
+
+                // select the row
+                tableKit.view.selectRow(at: indexPath, animated: animateSelectionChange, scrollPosition: .none)
+
+                // try to scroll to the selected row
+                guard
+                    let indexPathsForVisibleRows = tableKit.view.indexPathsForVisibleRows,
+                    !indexPathsForVisibleRows.isEmpty
+                else {
+                    return
+                }
+
+                let isVisible = indexPathsForVisibleRows.contains(indexPath)
                 let scrollPosition: UITableView.ScrollPosition
-                if let prevIndex = prev?.index {
-                    scrollPosition = (prevIndex < index ? .bottom : .top)
-                } else {
+
+                switch (prev, isVisible) {
+                // Don't change scroll position if the row is already visible
+                case (_, true):
+                    scrollPosition = .none
+
+                // Don't change scroll position if the row was already selected
+                case (let prevIndex?, false) where prevIndex == index:
+                    scrollPosition = .none
+
+                // Scroll the row to the bottom when its below the previous selected one
+                case (let prevIndex?, false) where prevIndex < index:
+                    scrollPosition = .bottom
+
+                // Scroll the row to the top when its above the previous selected one
+                case (_?, false):
+                    scrollPosition = .top
+
+                // Scroll the row to the middle when there was no previous selection
+                case (nil, false):
                     scrollPosition = .middle
                 }
-                tableKit.view.selectRow(at: indexPath, animated: true, scrollPosition: isVisible ? .none : scrollPosition)
-            } else if let prevIndex = prev?.index {
-                guard let indexPath = IndexPath(prevIndex, in: tableKit.table) else { return }
-                tableKit.view.deselectRow(at: indexPath, animated: true)
+
+                // .none does not mean no scrolling will occur
+                if scrollPosition != .none {
+                    tableKit.view.scrollToRow(at: indexPath, at: scrollPosition, animated: animateSelectionChange)
+                }
+            } else if let prevIndex = prev {
+                guard let indexPath = IndexPath(prevIndex, in: tableKit.table) else {
+                    return
+                }
+
+                tableKit.view.deselectRow(at: indexPath, animated: animateSelectionChange)
             }
         }
 
         bag += tableKit.delegate.didSelect.onValue { index in
-            self.select(index: index)
+            select(index)
         }
 
         tableKit.delegate.shouldAutomaticallyDeselect = false
@@ -528,8 +544,6 @@ public extension MasterDetailSelection where Elements.Index == TableIndex {
         return bag
     }
 }
-
-#endif
 
 extension CGFloat {
     static let headerFooterAlmostZero: CGFloat = 0.0000001

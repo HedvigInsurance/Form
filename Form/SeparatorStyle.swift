@@ -61,11 +61,6 @@ public extension UIScreen {
     var hairlineWidth: CGFloat {
         return 1.0 / scale
     }
-
-    @available(*, deprecated, renamed: "hairlineWidth")
-    var thinestLineWidth: CGFloat {
-        return hairlineWidth
-    }
 }
 
 public extension UITraitCollection {
@@ -74,26 +69,27 @@ public extension UITraitCollection {
         return displayScale > 0 ? 1.0 / displayScale : UIScreen.main.hairlineWidth
     }
 
-    @available(*, deprecated, renamed: "hairlineWidth")
-    var thinestLineWidth: CGFloat {
-        return hairlineWidth
-    }
+    /// Returns true if horizontal size class is `.regular`
+    var isRegular: Bool { return horizontalSizeClass == .regular }
 
-    /// Returns true if userInterfaceIdiom is pad
+    /// Returns true if horizontal size class is `.compact`
+    var isCompact: Bool { return horizontalSizeClass == .compact }
+}
+
+// Deprecated
+public extension UITraitCollection {
+
+    @available(*, deprecated, message: "No longer supported as a convenience variable. Prefer size class checks (isRegular/isCompact) or check the userInterfaceIdiom manually")
     var isPad: Bool { return userInterfaceIdiom == .pad }
 
-    /// Returns true if userInterfaceIdiom is phone
+    @available(*, deprecated, message: "No longer supported as a convenience variable. Prefer size class checks (isRegular/isCompact) or check the userInterfaceIdiom manually")
     var isPhone: Bool { return userInterfaceIdiom == .phone }
+
 }
 
 public extension CGFloat {
     /// Returns the thinnest line representable by the main screen.
     static var hairlineWidth: CGFloat {
         return UIScreen.main.hairlineWidth
-    }
-
-    @available(*, deprecated, renamed: "hairlineWidth")
-    static var thinestLineWidth: CGFloat {
-        return hairlineWidth
     }
 }
