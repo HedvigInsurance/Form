@@ -9,6 +9,15 @@
           "revision": "7f25f935456e35599026501c6ba941b5ac8c7faa",
           "version": "1.8.6"
         }
+      },
+      {
+        "package": "Presentation",
+        "repositoryURL": "https://github.com/HedvigInsurance/Presentation.git",
+        "state": {
+          "branch": null,
+          "revision": "b9513e6c2f92384f0902996ddd91e142b87abc3a",
+          "version": "1.14.0"
+        }
       }
     ]
   },

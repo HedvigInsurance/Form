@@ -14,12 +14,13 @@ let package = Package(
             targets: ["Form"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/HedvigInsurance/Flow.git", .upToNextMajor(from: "1.8.6"))
+        .package(url: "https://github.com/HedvigInsurance/Flow.git", .upToNextMajor(from: "1.8.6")),
+        .package(url: "https://github.com/HedvigInsurance/Presentation.git", .upToNextMajor(from: "1.14.0"))
     ],
     targets: [
         .target(
             name: "Form",
-            dependencies: ["Flow"],
+            dependencies: ["Flow", "Presentation"],
             path: "Form"),
         .testTarget(
             name: "FormTests",
