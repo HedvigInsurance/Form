@@ -10,10 +10,11 @@ let package = Package(
     products: [
         .library(
             name: "Form",
+            type: .dynamic,
             targets: ["Form"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/izettle/Flow.git", .upToNextMajor(from: "1.8.0"))
+        .package(url: "https://github.com/HedvigInsurance/Flow.git", .upToNextMajor(from: "1.8.6"))
     ],
     targets: [
         .target(
