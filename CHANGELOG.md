@@ -1,3 +1,18 @@
+## 3.0.2
+- Bugfix: Prevent indefinite looping when pinning views to both the top and bottom of a scroll view.
+
+## 3.0.1
+- Change: `ValueField`: clear the `.shouldResetOnInsertion` flag when deleting characters.
+
+## 3.0.0
+- Added: `.shouldResetOnInsertion` to `ValueField`.
+- Added: `reset()`, `defaultValue`, and `.shouldResetOnInsertion` to the `TextEditor` protocol (breaking change).
+- Changed: Removed deprecated symbols.
+
+## 2.2.0
+- Added: Swift 5.2 support
+- Bugfix: Remove circular reference from ParentChildRelational
+
 ## 2.1.0
 - Added: Optional `adjustsFontForContentSizeCategory` property to specify on a TextStyle
 
