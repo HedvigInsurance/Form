@@ -60,13 +60,13 @@ public extension UIScrollView {
 
         self.adjustContentOffsetToRevealFirstResponder(adjustInsets)
 
-        bag += keyboardSignal(priority: .contentOffset).onValue { event -> Void in
+        bag += keyboardSignal(priority: .contentOffset).filter(predicate: { _ in self.window != nil }).filter { _ in self.firstResponder != nil }.onValue { event -> Void in
             lastResponder = self.firstResponder
             guard case let .willShow(_, animation) = event else { return }
             animation.animate { self.adjustContentOffsetToRevealFirstResponder(adjustInsets) }
         }
 
-        bag += NotificationCenter.default.signal(forName: UITextField.textDidBeginEditingNotification).onValue { _ in
+        bag += NotificationCenter.default.signal(forName: UITextField.textDidBeginEditingNotification).filter(predicate: { _ in self.window != nil }).filter { _ in self.firstResponder != nil }.onValue { _ in
             DispatchQueue.main.async { // Make sure to run after onKeyboardEvent above.
                 defer { lastResponder = self.firstResponder }
                 guard self.firstResponder != lastResponder else { return }
