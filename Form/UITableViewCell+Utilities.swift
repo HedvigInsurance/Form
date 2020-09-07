@@ -19,8 +19,16 @@ public extension UITableViewCell {
     convenience init(view: UIView, reuseIdentifier: String, style: DynamicTableViewFormStyle) {
         self.init(style: .default, reuseIdentifier: reuseIdentifier)
 
-        let left: NSLayoutConstraint = view.leftAnchor == contentView.leftAnchor
-        let right: NSLayoutConstraint = view.rightAnchor == contentView.rightAnchor
+        let left: NSLayoutConstraint
+        let right: NSLayoutConstraint
+
+        if #available(iOS 11.0, *) {
+            left = view.leftAnchor == contentView.safeAreaLayoutGuide.leftAnchor
+            right = view.rightAnchor == contentView.safeAreaLayoutGuide.rightAnchor
+        } else {
+            left = view.leftAnchor == contentView.leftAnchor
+            right = view.rightAnchor == contentView.rightAnchor
+        }
         let top: NSLayoutConstraint = view.topAnchor == contentView.topAnchor
         let bottom: NSLayoutConstraint = view.bottomAnchor == contentView.bottomAnchor
 
