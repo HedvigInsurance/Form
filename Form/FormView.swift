@@ -20,10 +20,6 @@ public class FormView: UIStackView, DynamicStylable {
         axis = .vertical
         distribution = .fill
         alignment = .fill
-        if #available(iOS 11.0, *) {
-            insetsLayoutMarginsFromSafeArea = true
-            isLayoutMarginsRelativeArrangement = true
-        }
 
         applyStylingIfNeeded()
     }

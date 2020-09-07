@@ -41,7 +41,7 @@ public class SectionView: UIView {
         clipsToBounds = true
 
         let stackView = UIStackView(views: views.compactMap { $0 }, axis: .vertical)
-        embedView(stackView)
+        embedView(stackView, withinLayoutArea: .safeArea)
 
         self.updateOrderedViews(to: rows)
         orderedViews = rows
