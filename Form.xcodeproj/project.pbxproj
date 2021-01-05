@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -42,6 +42,7 @@
 		CDD2A5211F42DE7500E2B78B /* HighlightedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDD2A5201F42DE7500E2B78B /* HighlightedTests.swift */; };
 		CFD2FFE3221323BF002D4D36 /* TextStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD2FFE2221323BF002D4D36 /* TextStyleTests.swift */; };
 		E63D89BF1DF59D6100AAB381 /* DisplayableString.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63D89BE1DF59D6100AAB381 /* DisplayableString.swift */; };
+		EB3F6D7025A44A2A009C95C2 /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = EB3F6D6F25A44A2A009C95C2 /* Flow */; };
 		F60102311DAE2D410020015B /* TableChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60102301DAE2D410020015B /* TableChange.swift */; };
 		F604260A20B6A47E00BC4CAB /* ParentChildRelationalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F604260920B6A47E00BC4CAB /* ParentChildRelationalTests.swift */; };
 		F62278DF1D707B9800CABE5E /* AssociatedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62278DE1D707B9800CABE5E /* AssociatedValues.swift */; };
@@ -117,6 +118,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		EB9075A425A4494A0036353E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		1C0656C11F82625E00E60465 /* UICollectionViewCell+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UICollectionViewCell+Utilities.swift"; path = "Form/UICollectionViewCell+Utilities.swift"; sourceTree = "<group>"; };
 		1C1EEE0C1F3308C400DFFDFE /* Selectable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Selectable.swift; path = Form/Selectable.swift; sourceTree = SOURCE_ROOT; };
@@ -178,7 +192,6 @@
 		F666BB8E20BE9741006D2507 /* NumberEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NumberEditor.swift; path = Form/NumberEditor.swift; sourceTree = "<group>"; };
 		F666BBD720BEDC31006D2507 /* FormFramework.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = FormFramework.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F666BBD820BEDC32006D2507 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
-		F666BBD920BEDC32006D2507 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		F666BBDA20BEDC32006D2507 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		F66835CA2091B6DF002D2676 /* UIView+Embedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIView+Embedding.swift"; path = "Form/UIView+Embedding.swift"; sourceTree = "<group>"; };
 		F66835D52091CC32002D2676 /* UIResponders+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIResponders+Utilities.swift"; path = "Form/UIResponders+Utilities.swift"; sourceTree = "<group>"; };
@@ -232,6 +245,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		EB9075A625A4497B0036353E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB3F6D7025A44A2A009C95C2 /* Flow in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F62E45B11CABFB5300C6867E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -243,6 +264,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EB9075A725A449800036353E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F60EAE7320C5350200F987E3 /* Support */ = {
 			isa = PBXGroup;
 			children = (
@@ -374,7 +402,6 @@
 		F6A9D5D41C1728BA009A0EEB = {
 			isa = PBXGroup;
 			children = (
-				F666BBD920BEDC32006D2507 /* Cartfile */,
 				F666BBDA20BEDC32006D2507 /* CHANGELOG.md */,
 				F666BBD720BEDC31006D2507 /* FormFramework.podspec */,
 				F666BBD820BEDC32006D2507 /* LICENSE.md */,
@@ -389,6 +416,7 @@
 				F60EAE7320C5350200F987E3 /* Support */,
 				F62E45B51CABFB5300C6867E /* FormTests */,
 				F6A9D5DF1C1728BA009A0EEB /* Products */,
+				EB9075A725A449800036353E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -477,16 +505,21 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F6A9D5F21C1728BA009A0EEB /* Build configuration list for PBXNativeTarget "Form" */;
 			buildPhases = (
+				EB9075A625A4497B0036353E /* Frameworks */,
 				F6A9D5D91C1728BA009A0EEB /* Sources */,
 				F6A9D5DB1C1728BA009A0EEB /* Headers */,
 				F6A9D5DC1C1728BA009A0EEB /* Resources */,
 				ED7163CF2189C1A0008AD729 /* ShellScript */,
+				EB9075A425A4494A0036353E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Form;
+			packageProductDependencies = (
+				EB3F6D6F25A44A2A009C95C2 /* Flow */,
+			);
 			productName = Layout;
 			productReference = F6A9D5DE1C1728BA009A0EEB /* Form.framework */;
 			productType = "com.apple.product-type.framework";
@@ -498,7 +531,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1230;
 				ORGANIZATIONNAME = iZettle;
 				TargetAttributes = {
 					F62E45B31CABFB5300C6867E = {
@@ -522,6 +555,9 @@
 				Base,
 			);
 			mainGroup = F6A9D5D41C1728BA009A0EEB;
+			packageReferences = (
+				EB9075A125A4494A0036353E /* XCRemoteSwiftPackageReference "flow" */,
+			);
 			productRefGroup = F6A9D5DF1C1728BA009A0EEB /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -713,7 +749,11 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = FormTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.iZettle.FormTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -726,7 +766,11 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = FormTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.iZettle.FormTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -756,6 +800,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -774,7 +819,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -809,6 +854,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -826,10 +872,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -850,7 +897,11 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 				INFOPLIST_FILE = Form/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MARKETING_VERSION = 3.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.iZettle.Form;
 				PRODUCT_NAME = Form;
@@ -871,7 +922,11 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 				INFOPLIST_FILE = Form/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MARKETING_VERSION = 3.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.iZettle.Form;
 				PRODUCT_NAME = Form;
@@ -911,6 +966,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EB9075A125A4494A0036353E /* XCRemoteSwiftPackageReference "flow" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/HedvigInsurance/flow";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EB3F6D6F25A44A2A009C95C2 /* Flow */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB9075A125A4494A0036353E /* XCRemoteSwiftPackageReference "flow" */;
+			productName = Flow;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F6A9D5D51C1728BA009A0EEB /* Project object */;
 }
