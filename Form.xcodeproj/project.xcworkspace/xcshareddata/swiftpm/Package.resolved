@@ -6,7 +6,16 @@
         "repositoryURL": "https://github.com/HedvigInsurance/flow",
         "state": {
           "branch": "master",
-          "revision": "e6e4b928b5fb6decfd3e055aafa5311282f64d9c",
+          "revision": "18a24f61fc9279b49019464c9aa7ac64934b4829",
+          "version": null
+        }
+      },
+      {
+        "package": "Presentation",
+        "repositoryURL": "https://github.com/HedvigInsurance/presentation",
+        "state": {
+          "branch": "master",
+          "revision": "efad051096f418c84f8ed8509c8410045d40c633",
           "version": null
         }
       }

@@ -43,6 +43,8 @@
 		CFD2FFE3221323BF002D4D36 /* TextStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD2FFE2221323BF002D4D36 /* TextStyleTests.swift */; };
 		E63D89BF1DF59D6100AAB381 /* DisplayableString.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63D89BE1DF59D6100AAB381 /* DisplayableString.swift */; };
 		EB3F6D7025A44A2A009C95C2 /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = EB3F6D6F25A44A2A009C95C2 /* Flow */; };
+		EB3F6D7F25A44BC7009C95C2 /* Presentation in Frameworks */ = {isa = PBXBuildFile; productRef = EB3F6D7E25A44BC7009C95C2 /* Presentation */; };
+		EB3F6D8025A44BC7009C95C2 /* Presentation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = EB3F6D7E25A44BC7009C95C2 /* Presentation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F60102311DAE2D410020015B /* TableChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60102301DAE2D410020015B /* TableChange.swift */; };
 		F604260A20B6A47E00BC4CAB /* ParentChildRelationalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F604260920B6A47E00BC4CAB /* ParentChildRelationalTests.swift */; };
 		F62278DF1D707B9800CABE5E /* AssociatedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62278DE1D707B9800CABE5E /* AssociatedValues.swift */; };
@@ -125,6 +127,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				EB3F6D8025A44BC7009C95C2 /* Presentation in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -249,6 +252,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB3F6D7F25A44BC7009C95C2 /* Presentation in Frameworks */,
 				EB3F6D7025A44A2A009C95C2 /* Flow in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -519,6 +523,7 @@
 			name = Form;
 			packageProductDependencies = (
 				EB3F6D6F25A44A2A009C95C2 /* Flow */,
+				EB3F6D7E25A44BC7009C95C2 /* Presentation */,
 			);
 			productName = Layout;
 			productReference = F6A9D5DE1C1728BA009A0EEB /* Form.framework */;
@@ -557,6 +562,7 @@
 			mainGroup = F6A9D5D41C1728BA009A0EEB;
 			packageReferences = (
 				EB9075A125A4494A0036353E /* XCRemoteSwiftPackageReference "flow" */,
+				EB3F6D7D25A44BC7009C95C2 /* XCRemoteSwiftPackageReference "presentation" */,
 			);
 			productRefGroup = F6A9D5DF1C1728BA009A0EEB /* Products */;
 			projectDirPath = "";
@@ -968,6 +974,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		EB3F6D7D25A44BC7009C95C2 /* XCRemoteSwiftPackageReference "presentation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/HedvigInsurance/presentation";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		EB9075A125A4494A0036353E /* XCRemoteSwiftPackageReference "flow" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/HedvigInsurance/flow";
@@ -983,6 +997,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EB9075A125A4494A0036353E /* XCRemoteSwiftPackageReference "flow" */;
 			productName = Flow;
+		};
+		EB3F6D7E25A44BC7009C95C2 /* Presentation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB3F6D7D25A44BC7009C95C2 /* XCRemoteSwiftPackageReference "presentation" */;
+			productName = Presentation;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
