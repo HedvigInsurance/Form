@@ -10,12 +10,11 @@ let package = Package(
     products: [
         .library(
             name: "Form",
-            type: .dynamic,
             targets: ["Form"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/HedvigInsurance/Flow.git", .upToNextMajor(from: "1.8.6")),
-        .package(url: "https://github.com/HedvigInsurance/Presentation.git", .upToNextMajor(from: "1.14.0"))
+        .package(url: "https://github.com/HedvigInsurance/Flow.git", .branch("master")),
+        .package(url: "https://github.com/HedvigInsurance/Presentation.git", .branch("master"))
     ],
     targets: [
         .target(
